@@ -9,34 +9,34 @@ type Props = {
 }
 
 const useStyles = createUseStyles({
-	field: {
-		width: '20px',
-		height: '20px',
+    field: {
+        width: '20px',
+        height: '20px',
         margin: '1px'
-	},
-	fieldWithFood: {
-		backgroundColor: "red"
-	},
-	fieldWithSnake: {
-		backgroundColor: "green",
-	}
+    },
+    fieldWithFood: {
+        backgroundColor: "red"
+    },
+    fieldWithSnake: {
+        backgroundColor: "green",
+    }
 });
 
 const Field: React.FC<Props> = (props: Props) => {
-	const foodCoordinates = useSelector((state: RootState) => state.game.foodPoint);
-	const snake = useSelector((state: RootState) => state.game.snake);
+    const foodCoordinates = useSelector((state: RootState) => state.game.foodPoint);
+    const snake = useSelector((state: RootState) => state.game.snake);
 
-	const classes = useStyles();
+    const classes = useStyles();
 
-	const generateFieldClass = (x: number, y: number): string => {
-		if (foodCoordinates?.x === x && foodCoordinates?.y === y) {
-			return `${classes.field} ${classes.fieldWithFood}`;
-		}
-		if (snake.points.some(point => point.x === x && point.y === y)) {
-			return `${classes.field} ${classes.fieldWithSnake}`;
-		}
-		return classes.field;
-	}
+    const generateFieldClass = (x: number, y: number): string => {
+        if (foodCoordinates.x === x && foodCoordinates.y === y) { //TODO: add the helper to compare two points
+            return `${classes.field} ${classes.fieldWithFood}`;
+        }
+        if (snake.points.some(point => point.x === x && point.y === y)) { //TODO: add the helper to compare two points
+            return `${classes.field} ${classes.fieldWithSnake}`;
+        }
+        return classes.field;
+    }
 
     return (
         <div className={generateFieldClass(props.coordinateX, props.coordinateY)} />

@@ -11,7 +11,7 @@ const randomPointWithoutSnake = (pointsToMiss: Point[]): Point => {
   do { 
 	coordinateX = randomCoordinate();
 	coordinateY = randomCoordinate();
-  } while (pointsToMiss.some(point => point.x === coordinateX && point.y === coordinateY))
+  } while (pointsToMiss.some(point => point.x === coordinateX && point.y === coordinateY)) //TODO: add the helper to compare two points
   return { x: coordinateX, y: coordinateY };
 }
 
