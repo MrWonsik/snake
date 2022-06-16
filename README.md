@@ -1,6 +1,6 @@
 # SNAKE GAME
 
-The project was created to organize my knowledge of frontend technologies based on the snake game.
+The project was created to organize my knowledge of frontend technologies.
 
 ## setup
 
