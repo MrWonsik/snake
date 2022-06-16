@@ -1,9 +1,9 @@
 import React from 'react';
-import GameBoard from '../features/game/GameBoard';
+import GameContainer from '../features/game/GameContainer';
 
 function App() {
 	return (
-		<GameBoard />
+		<GameContainer />
 	);
 }
 

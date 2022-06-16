@@ -2,20 +2,22 @@ import React from 'react'
 import { createUseStyles } from 'react-jss';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
+import { pointEquals } from '../../helpers/PointComparator';
+import { Point } from './gameSlice';
 
 type Props = {
-    coordinateX: number;
-    coordinateY: number;
+    fieldCoordinates: Point
 }
 
 const useStyles = createUseStyles({
     field: {
-        width: '20px',
-        height: '20px',
+        width: '90%',
+        height: '90%',
         margin: '1px'
     },
     fieldWithFood: {
-        backgroundColor: "red"
+        backgroundColor: "red",
+        borderRadius: "20px"
     },
     fieldWithSnake: {
         backgroundColor: "green",
@@ -28,18 +30,18 @@ const Field: React.FC<Props> = (props: Props) => {
 
     const classes = useStyles();
 
-    const generateFieldClass = (x: number, y: number): string => {
-        if (foodCoordinates.x === x && foodCoordinates.y === y) { //TODO: add the helper to compare two points
+    const generateFieldClass = (fieldPoint: Point): string => {
+        if (pointEquals(foodCoordinates, fieldPoint)) {
             return `${classes.field} ${classes.fieldWithFood}`;
         }
-        if (snake.points.some(point => point.x === x && point.y === y)) { //TODO: add the helper to compare two points
+        if (snake.points.some(snakePoint => pointEquals(snakePoint, fieldPoint))) {
             return `${classes.field} ${classes.fieldWithSnake}`;
         }
         return classes.field;
     }
 
     return (
-        <div className={generateFieldClass(props.coordinateX, props.coordinateY)} />
+        <div className={generateFieldClass(props.fieldCoordinates)} />
     )
 }
 

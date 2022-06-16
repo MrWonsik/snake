@@ -23,7 +23,8 @@ npm start
 
 ## TODO
 
-- start the game button
-- possibility to set the speed of snake
-- pause the game if window is inactive
-- kill the snake if it contact with the wall or with itself (end game)
+- [bug] when pressing keys too fast then validation for directions not working!
+- refactor
+
+- GOD MODE (snake will never die :))
+- WALL AS A MIRRORS

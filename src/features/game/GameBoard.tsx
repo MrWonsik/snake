@@ -2,69 +2,120 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
+import { pointEquals } from '../../helpers/PointComparator';
 import Field from './Field';
-import { changeDirection, Direction, foodEaten, moveSnake } from './gameSlice';
+import { snakeDirectionChanged, Direction, foodEaten, snakeMoved, GameStatus } from './gameSlice';
 
 const useStyles = createUseStyles({
 	gameBoard: {
-		border: '1px solid black',
+		width: "40vw",
+		height: "40vw",
+		border: '3px solid #a67a5b',
 		margin: 'auto',
 		display: 'inline-grid',
 		gridTemplate: ({ boardSize }: { boardSize: number }) => {
 			return "repeat(" + boardSize + ", 1fr) / repeat(" + boardSize + ", 1fr)"
 		},
-		columnGap: 0,
-		rowGap: 0,
-	}
+		backgroundColor: "#e8dcb5",
+		gap: 0, 
+		maxWidth: "600px",
+		maxHeight: "600px",
+	},
+	scoreContainer: {
+		textAlign: "right",
+		fontSize: "12px"
+	},
+	infoContainer: {
+		position: "absolute",
+		width: "-webkit-fill-available",
+		height: "-webkit-fill-available",
+		backgroundColor: "rgba(100, 100, 100, 0.3)",
+		top: "0",
+		left: "0",
+		textAlign: "center",
+		fontSize: "50px",
+		paddingTop: "100px"
+	},
 });
+
+
+const createInformationMessage = (gameStatus: GameStatus) => {
+	switch(gameStatus) {
+		case GameStatus.FREEZE: return "PAUSE"
+		case GameStatus.END: return "YOU LOSE!"
+		default: return ""
+	}
+}
+
+const availableHorizontalDirections = [Direction.LEFT, Direction.RIGHT];
+const availableVerticalDirections = [Direction.UP, Direction.DOWN];
+
+const isNewDirectionValid = (currentDirection: Direction, newDirection: Direction): boolean => {
+	console.log("Current: " + currentDirection);
+	console.log("New: " + newDirection);
+	switch(currentDirection) {
+		case Direction.UP: 
+		case Direction.DOWN: return availableHorizontalDirections.includes(newDirection);
+		case Direction.LEFT: 
+		case Direction.RIGHT: return availableVerticalDirections.includes(newDirection);
+		default: return false;
+	}
+}
+
 
 const GameBoard: React.FC = () => {
 
 	const snake = useSelector((state: RootState) => state.game.snake);
+	const score = useSelector((state: RootState) => state.game.score);
 	const boardSize = useSelector((state: RootState) => state.game.boardSize);
 	const foodCoordinates = useSelector((state: RootState) => state.game.foodPoint);
+	const gameStatus = useSelector((state: RootState) => state.game.gameStatus);
 
 	const dispatch = useDispatch();
 
+	const handleArrowPress = (e: KeyboardEvent): void => {
+		if (e.key === "ArrowUp") {
+			dispatch(snakeDirectionChanged(Direction.UP));
+		}
+		if (e.key === "ArrowLeft") {
+			dispatch(snakeDirectionChanged(Direction.LEFT));
+		}
+		if (e.key === "ArrowRight") {
+			dispatch(snakeDirectionChanged(Direction.RIGHT));
+		}
+		if (e.key === "ArrowDown") {
+			dispatch(snakeDirectionChanged(Direction.DOWN));
+		}
+	}
+
 	useEffect(() => {
 		document.addEventListener("keydown", handleArrowPress, false);
-		const interval = setInterval(() => dispatch(moveSnake()), snake.speed);
+		const interval = setInterval(() => dispatch(snakeMoved()), snake.speed, gameStatus);
 		return () => clearInterval(interval);
 	}, []);
 
 	useEffect(() => {
-		if (snake.points[0].x === foodCoordinates.x && snake.points[0].y === foodCoordinates.y) { //TODO: add the helper to compare two points
+		if (pointEquals(snake.points[0], foodCoordinates)) {
 			dispatch(foodEaten());
 		}
 	}, [snake.points[0]])
 
 	const classes = useStyles({ boardSize });
 
-	const handleArrowPress = (e: KeyboardEvent): void => {
-		if (e.key === "ArrowUp") {
-			dispatch(changeDirection(Direction.UP));
-		}
-		if (e.key === "ArrowLeft") {
-			dispatch(changeDirection(Direction.LEFT));
-		}
-		if (e.key === "ArrowRight") {
-			dispatch(changeDirection(Direction.RIGHT));
-		}
-		if (e.key === "ArrowDown") {
-			dispatch(changeDirection(Direction.DOWN));
-		}
-	}
-
 	const fields = [];
 	for (let i = 0; i < boardSize; i++) {
 		for (let j = 0; j < boardSize; j++) {
-			fields.push(<Field key={`${i}-${j}`} coordinateX={j} coordinateY={i} />);
+			fields.push(<Field key={`${i}-${j}`} fieldCoordinates={{ x: j, y: i}} />);
 		}
 	}
 
 	return (
-		<div className={classes.gameBoard}>
-			{fields}
+		<div>
+			{[GameStatus.FREEZE, GameStatus.END].includes(gameStatus) && <div className={classes.infoContainer}>{createInformationMessage(gameStatus)}</div>}
+			<div className={classes.scoreContainer}>SCORE: {score}</div> 
+			<div className={classes.gameBoard}>
+				{fields}
+			</div>
 		</div>
 	);
 }
