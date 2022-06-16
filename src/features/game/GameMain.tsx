@@ -10,22 +10,22 @@ const useStyles = createUseStyles({
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        width: "40vw",
-        height: "40vw",
         textShadow: "1px 1px darkgreen"
     },
     buttonContainer: {
-        marginTop: "50px",
+        marginTop: "40px",
     },
     buttonsContainer: {
         display: "flex",
         justifyContent: "space-around",
         width: "100%",
-        marginTop: "50px",
+        marginTop: "10px",
     },
     startButton: {
-        width: "200px",
+        width: "240px",
         height: "40px",
+        margin: "20px",
+        fontSize: "16px",
         textTransform: "uppercase",
         background: "transparent",
         border: "none",
@@ -37,7 +37,8 @@ const useStyles = createUseStyles({
         }
     },
     button: {
-        width: "160px",
+        width: "auto",
+        margin: "20px",
         height: "40px",
         textTransform: "uppercase",
         background: "transparent",
@@ -55,6 +56,7 @@ const useStyles = createUseStyles({
     godModeButton: {
         width: "120px",
         height: "40px",
+        margin: "20px",
         textTransform: "uppercase",
         background: "transparent",
         border: "none",

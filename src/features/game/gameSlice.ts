@@ -47,20 +47,36 @@ export interface GameState {
 
 const SNAKE_START_POINT: Point = {x:0, y:0}
 
+const initValueFromLocalStorage = (key: string, defaultValue: boolean): boolean => {
+	const valueFromLocalStorage = localStorage.getItem(key);
+	if(valueFromLocalStorage != null) {
+		return JSON.parse(valueFromLocalStorage);
+	}
+	return defaultValue;
+}
+
+const initSpeedValueFromLocalStorage = (): Speed => {
+	const snakeSpeedFromLocalStorage = localStorage.getItem("snakeSpeed");
+	if(snakeSpeedFromLocalStorage != null) {
+		return Speed[JSON.parse(snakeSpeedFromLocalStorage) as keyof typeof Speed];
+	}
+	return Speed.slow;
+}
+
 const initialState: GameState = {
 	score: 0,
 	snake: {
 		points: [SNAKE_START_POINT],
 		length: 0,
-		speed: Speed.slow,
+		speed: initSpeedValueFromLocalStorage(),
 		direction: Direction.RIGHT,
 		moves: [],
 	},
 	boardSize: BOARD_SIZE,
 	foodPoint: generateAvailableRandomPoint([SNAKE_START_POINT], BOARD_SIZE),
 	gameStatus: GameStatus.OPEN,
-	godMode: false,
-	mirrorMode: false
+	godMode:initValueFromLocalStorage("godMode", false),
+	mirrorMode: initValueFromLocalStorage("mirrorMode", false)
 };
 
 const AVAILABLE_HORIZONTAL_DIRECTIONS = [Direction.LEFT, Direction.RIGHT];
@@ -122,6 +138,7 @@ export const gameSlice = createSlice({
 			state.snake.length += 1;
 		},
 		snakeSpeedChanged: (state, action: PayloadAction<Speed>) => {
+			localStorage.setItem('snakeSpeed', JSON.stringify(Speed[action.payload]));
 			state.snake.speed = action.payload;
 		},
 		snakeDirectionChanged: (state, action: PayloadAction<Direction>) => {
@@ -154,9 +171,11 @@ export const gameSlice = createSlice({
 			state.gameStatus = action.payload;
 		},
 		godModeToggled: (state) => {
+			localStorage.setItem('godMode', JSON.stringify(!state.godMode));
 			state.godMode = !state.godMode;
 		},
 		mirrorModeToggled: (state) => {
+			localStorage.setItem('mirrorMode', JSON.stringify(!state.mirrorMode));
 			state.mirrorMode = !state.mirrorMode;
 		}
 	},
