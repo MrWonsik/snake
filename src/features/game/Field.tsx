@@ -2,7 +2,7 @@ import React from 'react'
 import { createUseStyles } from 'react-jss';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { pointEquals } from '../../helpers/PointComparator';
+import { pointEquals, pointsIncludes } from '../../helpers/PointHelpers';
 import { Point } from './gameSlice';
 
 type Props = {
@@ -21,6 +21,9 @@ const useStyles = createUseStyles({
     },
     fieldWithSnake: {
         backgroundColor: "green",
+    },
+    fieldWithSnakeHead: {
+        backgroundColor: "yellow",
     }
 });
 
@@ -34,7 +37,10 @@ const Field: React.FC<Props> = (props: Props) => {
         if (pointEquals(foodCoordinates, fieldPoint)) {
             return `${classes.field} ${classes.fieldWithFood}`;
         }
-        if (snake.points.some(snakePoint => pointEquals(snakePoint, fieldPoint))) {
+        if (pointEquals(snake.points[0], fieldPoint)) {
+            return `${classes.field} ${classes.fieldWithSnakeHead}`;
+        }
+        if (pointsIncludes(snake.points, fieldPoint)) {
             return `${classes.field} ${classes.fieldWithSnake}`;
         }
         return classes.field;

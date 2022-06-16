@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { pointEquals } from '../../helpers/PointComparator';
+import { pointEquals } from '../../helpers/PointHelpers';
 import Field from './Field';
-import { snakeDirectionChanged, Direction, foodEaten, snakeMoved, GameStatus } from './gameSlice';
+import { snakeDirectionChanged, Direction, foodEaten, snakeMoved, GameStatus, gameStatusChanged } from './gameSlice';
 
 const useStyles = createUseStyles({
 	gameBoard: {
@@ -47,22 +47,6 @@ const createInformationMessage = (gameStatus: GameStatus) => {
 	}
 }
 
-const availableHorizontalDirections = [Direction.LEFT, Direction.RIGHT];
-const availableVerticalDirections = [Direction.UP, Direction.DOWN];
-
-const isNewDirectionValid = (currentDirection: Direction, newDirection: Direction): boolean => {
-	console.log("Current: " + currentDirection);
-	console.log("New: " + newDirection);
-	switch(currentDirection) {
-		case Direction.UP: 
-		case Direction.DOWN: return availableHorizontalDirections.includes(newDirection);
-		case Direction.LEFT: 
-		case Direction.RIGHT: return availableVerticalDirections.includes(newDirection);
-		default: return false;
-	}
-}
-
-
 const GameBoard: React.FC = () => {
 
 	const snake = useSelector((state: RootState) => state.game.snake);
@@ -88,8 +72,18 @@ const GameBoard: React.FC = () => {
 		}
 	}
 
+	const pauseTheGame = () => {
+		dispatch(gameStatusChanged(GameStatus.FREEZE));
+	}
+
+	const resumeTheGame = () => {
+		dispatch(gameStatusChanged(GameStatus.STARTED));
+	}
+
 	useEffect(() => {
 		document.addEventListener("keydown", handleArrowPress, false);
+		window.addEventListener("blur", pauseTheGame);
+		window.addEventListener("focus", resumeTheGame);
 		const interval = setInterval(() => dispatch(snakeMoved()), snake.speed, gameStatus);
 		return () => clearInterval(interval);
 	}, []);

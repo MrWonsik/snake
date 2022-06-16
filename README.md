@@ -23,8 +23,4 @@ npm start
 
 ## TODO
 
-- [bug] when pressing keys too fast then validation for directions not working!
 - refactor
-
-- GOD MODE (snake will never die :))
-- WALL AS A MIRRORS
